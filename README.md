@@ -1,4 +1,4 @@
-# Americanas Estagio Tech - Spring
+# Americanas - Estágio Tech - Spring
 
 ## :computer: Projeto
 
@@ -12,18 +12,18 @@ O Projeto é uma API de aluguel de livros.
 
 Este projeto foi desenvolvido com:
 
--   [Spring Boot](https://spring.io/projects/spring-boot)
--   [Spring Data JDBC](https://spring.io/projects/spring-data-jdbc)
--   [Lombok](https://projectlombok.org/)
--   [H2 Database](https://www.h2database.com/html/main.html)
--   [JaCoCo](https://www.jacoco.org/jacoco/)
--   [Swagger](https://springdoc.org/)
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Spring Data JDBC](https://spring.io/projects/spring-data-jdbc)
+- [Lombok](https://projectlombok.org/)
+- [H2 Database](https://www.h2database.com/html/main.html)
+- [JaCoCo](https://www.jacoco.org/jacoco/)
+- [Swagger](https://springdoc.org/)
 
 ## :rocket: Iniciar a aplicacão
 
 ### Pré-requisitos
 
--   [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+- [Java JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
 ---
 
