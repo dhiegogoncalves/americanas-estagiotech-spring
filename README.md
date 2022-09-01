@@ -1,4 +1,4 @@
-# Americanas Estagio Tech - Spring
+# Americanas - Estágio Tech - Spring
 
 ## :computer: Projeto
 
