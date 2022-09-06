@@ -29,7 +29,7 @@ public class CreateBookRequest {
     @NotBlank(message = "'publisher' é obrigatório")
     private String publisher;
 
-    public Book ToModel() {
+    public Book toModel() {
         return Book.create(this.title, this.isbn, this.author, this.edition, this.publisher);
     }
 }

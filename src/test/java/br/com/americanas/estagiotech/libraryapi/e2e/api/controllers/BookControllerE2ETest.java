@@ -10,13 +10,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.americanas.estagiotech.libraryapi.api.dtos.book.BookResponse;
 import br.com.americanas.estagiotech.libraryapi.api.dtos.book.CreateBookRequest;
 import br.com.americanas.estagiotech.libraryapi.api.dtos.book.UpdateBookRequest;
 import br.com.americanas.estagiotech.libraryapi.repositories.BookRepository;
@@ -40,6 +38,7 @@ public class BookControllerE2ETest {
 
     @Test
     void givenAValidBook_whenCallsCreateBook_thenReturnBook() throws Exception {
+        // given
         Assertions.assertEquals(0, bookRepository.count());
 
         var expectedId = 1L;
@@ -58,9 +57,11 @@ public class BookControllerE2ETest {
 
         var json = mapper.writeValueAsString(createBookRequest);
 
+        // when
         var request = MockMvcRequestBuilders.post(BOOK_API_URL)
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json);
 
+        // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("id").value(expectedId))
                 .andExpect(MockMvcResultMatchers.jsonPath("title").value(expectedTitle))
@@ -74,9 +75,22 @@ public class BookControllerE2ETest {
 
     @Test
     void givenAValidBook_whenCallsUpdateBook_thenReturnBook() throws Exception {
+        // given
         Assertions.assertEquals(0, bookRepository.count());
 
-        givenABook("C", "9780132350884", "R", 2, "P");
+        var createBookRequest = CreateBookRequest.builder()
+                .title("C")
+                .isbn("9780132350884")
+                .author("R")
+                .edition(2)
+                .publisher("P").build();
+
+        var json = mapper.writeValueAsString(createBookRequest);
+
+        var request = MockMvcRequestBuilders.post(BOOK_API_URL).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).content(json);
+
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
 
         var expectedId = 1L;
         var expectedTitle = "Clean Code";
@@ -85,17 +99,19 @@ public class BookControllerE2ETest {
         var expectedEdition = 1;
         var expectedPublisher = "Pearson";
 
-        var createBookRequest = UpdateBookRequest.builder()
+        var updateBookRequest = UpdateBookRequest.builder()
                 .title(expectedTitle)
                 .author(expectedAuthor)
                 .edition(expectedEdition)
                 .publisher(expectedPublisher).build();
 
-        String json = mapper.writeValueAsString(createBookRequest);
+        json = mapper.writeValueAsString(updateBookRequest);
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BOOK_API_URL + "/" + expectedId)
+        // when
+        request = MockMvcRequestBuilders.put(BOOK_API_URL + "/" + expectedId)
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json);
 
+        // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("id").value(expectedId))
                 .andExpect(MockMvcResultMatchers.jsonPath("title").value(expectedTitle))
@@ -107,25 +123,48 @@ public class BookControllerE2ETest {
                 .andExpect(MockMvcResultMatchers.jsonPath("updated_at").isNotEmpty());
     }
 
-    private BookResponse givenABook(String title, String isbn, String author, Integer edition, String publisher)
-            throws Exception {
+    @Test
+    void givenValidBookId_whenDeleteBook_thenStatus204() throws Exception {
+        // given
+        Assertions.assertEquals(0, bookRepository.count());
+
         var createBookRequest = CreateBookRequest.builder()
-                .title(title)
-                .isbn(isbn)
-                .author(author)
-                .edition(edition)
-                .publisher(publisher).build();
+                .title("C")
+                .isbn("9780132350884")
+                .author("R")
+                .edition(2)
+                .publisher("P").build();
 
         var json = mapper.writeValueAsString(createBookRequest);
 
         var request = MockMvcRequestBuilders.post(BOOK_API_URL).contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON).content(json);
 
-        final var result = mockMvc.perform(request)
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andReturn()
-                .getResponse().getContentAsString();
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
 
-        return mapper.readValue(result, BookResponse.class);
+        Assertions.assertEquals(1, bookRepository.count());
+
+        // when
+        request = MockMvcRequestBuilders.delete(BOOK_API_URL + "/" + 1L);
+
+        // then
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        Assertions.assertEquals(0, bookRepository.count());
+    }
+
+    @Test
+    public void givenInvalidBookId_whenDeleteBook_thenStatus404() throws Exception {
+        // given
+        Assertions.assertEquals(0, bookRepository.count());
+
+        // when
+        var request = MockMvcRequestBuilders.delete(BOOK_API_URL + "/" + 1L);
+
+        // then
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("status").value("NOT_FOUND"))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Livro não foi encontrado"));
+
     }
 }

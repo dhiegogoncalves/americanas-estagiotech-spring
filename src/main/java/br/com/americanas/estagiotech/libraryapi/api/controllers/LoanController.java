@@ -1,5 +1,7 @@
 package br.com.americanas.estagiotech.libraryapi.api.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -19,6 +21,7 @@ import br.com.americanas.estagiotech.libraryapi.api.dtos.Pagination;
 import br.com.americanas.estagiotech.libraryapi.api.dtos.loan.CreateLoanRequest;
 import br.com.americanas.estagiotech.libraryapi.api.dtos.loan.LoanListRequest;
 import br.com.americanas.estagiotech.libraryapi.api.dtos.loan.LoanResponse;
+import br.com.americanas.estagiotech.libraryapi.api.dtos.loan.UpdateLoanStatusRequest;
 import br.com.americanas.estagiotech.libraryapi.api.exceptions.NotFoundException;
 import br.com.americanas.estagiotech.libraryapi.services.BookService;
 import br.com.americanas.estagiotech.libraryapi.services.LoanService;
@@ -57,7 +60,7 @@ public class LoanController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a loan")
-    public LoanResponse create(@RequestBody CreateLoanRequest createLoanRequest) {
+    public LoanResponse create(@RequestBody @Valid CreateLoanRequest createLoanRequest) {
         var book = bookService.getBookByIsbn(createLoanRequest.getBookIsbn())
                 .orElseThrow(() -> new NotFoundException("Livro não foi encontrado"));
         var loanCreated = loanService.create(
@@ -69,11 +72,11 @@ public class LoanController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("{id}/status/{active}")
+    @PutMapping("{id}/status")
     @Operation(summary = "Update loan status by id")
-    public void returnBook(@PathVariable Long id, @PathVariable Boolean active) {
+    public void returnBook(@PathVariable Long id, @RequestBody @Valid UpdateLoanStatusRequest updateLoanStatusRequest) {
         var loan = loanService.getById(id).orElseThrow(() -> new NotFoundException("Empréstimo não foi encontrado"));
-        loanService.updateStatus(loan, active);
+        loanService.updateStatus(loan, updateLoanStatusRequest.getActive());
     }
 
     @DeleteMapping("{id}")

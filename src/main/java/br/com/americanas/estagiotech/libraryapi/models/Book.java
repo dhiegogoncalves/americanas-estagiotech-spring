@@ -94,15 +94,4 @@ public class Book {
         return new Book(null, isbn, null, null, null);
     }
 
-    public Book clone() {
-        return new Book(
-                this.title,
-                this.isbn,
-                this.author,
-                this.edition,
-                this.publisher,
-                this.createdAt,
-                this.updatedAt);
-    }
-
 }

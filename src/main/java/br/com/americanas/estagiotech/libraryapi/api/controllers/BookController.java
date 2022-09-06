@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Books")
 public class BookController {
 
+    private static final String BOOK_MESSAGE_NOT_FOUND = "Livro não foi encontrado";
     private final BookService bookService;
     private final LoanService loanService;
 
@@ -47,7 +48,7 @@ public class BookController {
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
             @RequestParam(name = "sort", required = false, defaultValue = "title") final String sort,
             @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction) {
-        var book = bookListRequest.ToModel();
+        var book = bookListRequest.toModel();
         var pageRequest = PageRequest.of(page, perPage, Sort.by(Direction.fromString(direction), sort));
         var pageResult = bookService.findAll(book, pageRequest);
 
@@ -61,7 +62,7 @@ public class BookController {
     @GetMapping("{id}")
     @Operation(summary = "Get book details by id")
     public BookResponse getById(@PathVariable Long id) {
-        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException("Livro não foi encontrado"));
+        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException(BOOK_MESSAGE_NOT_FOUND));
 
         return BookResponse.toDto(book);
     }
@@ -70,7 +71,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a book")
     public BookResponse create(@RequestBody @Valid CreateBookRequest createBookRequest) {
-        var book = createBookRequest.ToModel();
+        var book = createBookRequest.toModel();
         var bookCreated = bookService.create(book);
 
         return BookResponse.toDto(bookCreated);
@@ -80,7 +81,7 @@ public class BookController {
     @PutMapping("{id}")
     @Operation(summary = "Update a book")
     public BookResponse update(@PathVariable Long id, @RequestBody @Valid UpdateBookRequest updateBookRequest) {
-        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException("Livro não foi encontrado"));
+        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException(BOOK_MESSAGE_NOT_FOUND));
 
         book.update(
                 updateBookRequest.getTitle(),
@@ -97,7 +98,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a book by id")
     public void delete(@PathVariable Long id) {
-        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException("Livro não foi encontrado"));
+        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException(BOOK_MESSAGE_NOT_FOUND));
         bookService.delete(book);
     }
 
@@ -109,7 +110,7 @@ public class BookController {
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
             @RequestParam(name = "sort", required = false, defaultValue = "id") final String sort,
             @RequestParam(name = "dir", required = false, defaultValue = "desc") final String direction) {
-        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException("Livro não foi encontrado"));
+        var book = bookService.getById(id).orElseThrow(() -> new NotFoundException(BOOK_MESSAGE_NOT_FOUND));
         var pageRequest = PageRequest.of(page, perPage, Sort.by(Direction.fromString(direction), sort));
         var pageResult = loanService.findAllByBook(book, pageRequest);
 

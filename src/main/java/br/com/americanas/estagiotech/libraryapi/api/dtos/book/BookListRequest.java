@@ -13,7 +13,7 @@ public class BookListRequest {
     private Integer edition;
     private String publisher;
 
-    public Book ToModel() {
+    public Book toModel() {
         return Book.filter(this.title, this.isbn, this.author, this.edition, this.publisher);
     }
 }

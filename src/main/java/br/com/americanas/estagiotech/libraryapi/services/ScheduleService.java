@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import br.com.americanas.estagiotech.libraryapi.models.Loan;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -24,9 +25,9 @@ public class ScheduleService {
     public void sendMailToLateLoans() {
         log.info("Sending email to Late Loans");
         var lateLoans = loanService.getAllLateLoans();
-        var mailList = lateLoans.stream().map(loan -> loan.getCustomerEmail()).toList();
+        var mailList = lateLoans.stream().map(Loan::getCustomerEmail).toList();
 
-        if (mailList.size() > 0) {
+        if (!mailList.isEmpty()) {
             emailService.sendMails(mailList, message);
         }
     }
