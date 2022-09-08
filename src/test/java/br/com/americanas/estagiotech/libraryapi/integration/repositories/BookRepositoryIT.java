@@ -39,7 +39,7 @@ public class BookRepositoryIT {
                 "Pearson");
 
         var book2 = Book.create(
-                "The Clean Code",
+                "The Clean Coder",
                 "9780137081073",
                 "Robert C. Martin",
                 1,
