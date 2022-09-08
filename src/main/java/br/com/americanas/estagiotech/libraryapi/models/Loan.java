@@ -87,6 +87,12 @@ public class Loan {
                 now);
     }
 
+    public void update(String customer, String customerEmail) {
+        this.customer = Objects.requireNonNull(customer, "'customer' não pode ser nulo");
+        this.customerEmail = Objects.requireNonNull(customerEmail, "'customer_email' não pode ser nulo");
+        this.updatedAt = Instant.now();
+    }
+
     public void updateStatus(Boolean active) {
         this.active = Objects.requireNonNull(active, "'active' não pode ser nulo");
         this.updatedAt = Instant.now();
@@ -95,4 +101,5 @@ public class Loan {
     public static Loan filter(String customer, String customerEmail, String bookIsbn) {
         return new Loan(customer, customerEmail, bookIsbn);
     }
+
 }

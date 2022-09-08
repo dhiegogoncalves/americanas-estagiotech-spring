@@ -44,18 +44,15 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public Loan create(String customer, String customerEmail, Book book) {
-        if (loanRepository.existsByBookAndActiveTrue(book)) {
+    public Loan create(Loan loan) {
+        if (loanRepository.existsByBookAndActiveTrue(loan.getBook())) {
             throw new BusinessException("Livro já foi emprestado");
         }
-
-        var loan = Loan.create(customer, customerEmail, book);
         return loanRepository.save(loan);
     }
 
-    public void updateStatus(Loan loan, Boolean active) {
-        loan.updateStatus(active);
-        loanRepository.save(loan);
+    public Loan update(Loan loan) {
+        return loanRepository.save(loan);
     }
 
     public void delete(Loan loan) {
