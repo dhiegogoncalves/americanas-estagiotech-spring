@@ -1,7 +1,6 @@
 package br.com.americanas.estagiotech.libraryapi.api.dtos;
 
 import java.util.List;
-import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,9 +20,7 @@ public class Pagination<T> {
     private long total;
     private List<T> items;
 
-    public <R> Pagination<R> map(final Function<T, R> mapper) {
-        final List<R> aNewList = this.items.stream().map(mapper).toList();
-
-        return new Pagination<>(this.currentPage, this.perPage, this.total, aNewList);
+    public static Pagination<?> toDto(int currentPage, int perPage, long total, List<?> items) {
+        return new Pagination<>(currentPage, perPage, total, items);
     }
 }

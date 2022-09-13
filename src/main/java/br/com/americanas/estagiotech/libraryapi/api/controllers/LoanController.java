@@ -8,7 +8,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,7 +42,7 @@ public class LoanController {
 
     @GetMapping
     @Operation(summary = "Find loans by params")
-    public Pagination<LoanResponse> findAll(
+    public Pagination<?> findAll(
             LoanListRequest loanListRequest,
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
@@ -53,7 +52,7 @@ public class LoanController {
         var pageRequest = PageRequest.of(page, perPage, Sort.by(Direction.fromString(direction), sort));
         var pageResult = loanService.findAll(loan, pageRequest);
 
-        return new Pagination<>(
+        return Pagination.toDto(
                 pageResult.getNumber(),
                 pageResult.getSize(),
                 pageResult.getTotalElements(),
@@ -93,12 +92,12 @@ public class LoanController {
         return LoanResponse.toDto(loanUpdated);
     }
 
-    @PatchMapping("{id}/status/{status}")
+    @PostMapping("{id}/finalize")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update loan status by id")
-    public void updateStatus(@PathVariable Long id, @PathVariable Boolean status) {
+    @Operation(summary = "finalize loan by id")
+    public void finalizeLoan(@PathVariable Long id) {
         var loan = loanService.getById(id).orElseThrow(() -> new NotFoundException(LOAN_MESSAGE_NOT_FOUND));
-        loan.updateStatus(status);
+        loan.returnBook();
         loanService.update(loan);
     }
 

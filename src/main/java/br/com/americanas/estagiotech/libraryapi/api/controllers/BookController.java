@@ -42,7 +42,7 @@ public class BookController {
 
     @GetMapping
     @Operation(summary = "Find books by params")
-    public Pagination<BookResponse> findAll(
+    public Pagination<?> findAll(
             BookListRequest bookListRequest,
             @RequestParam(name = "page", required = false, defaultValue = "0") final int page,
             @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
@@ -52,7 +52,7 @@ public class BookController {
         var pageRequest = PageRequest.of(page, perPage, Sort.by(Direction.fromString(direction), sort));
         var pageResult = bookService.findAll(book, pageRequest);
 
-        return new Pagination<>(
+        return Pagination.toDto(
                 pageResult.getNumber(),
                 pageResult.getSize(),
                 pageResult.getTotalElements(),
