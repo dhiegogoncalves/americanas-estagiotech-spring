@@ -496,7 +496,7 @@ public class LoanControllerE2ETest {
         json = mapper.writeValueAsString(updateLoanRequest);
 
         // when
-        request = MockMvcRequestBuilders.put(LOAN_API_URL + "/" + 1L).contentType(MediaType.APPLICATION_JSON)
+        request = MockMvcRequestBuilders.put(LOAN_API_URL + "/1").contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
         // then
@@ -545,7 +545,7 @@ public class LoanControllerE2ETest {
         json = mapper.writeValueAsString(updateLoanRequest);
 
         // when
-        request = MockMvcRequestBuilders.put(LOAN_API_URL + "/" + 2L).contentType(MediaType.APPLICATION_JSON)
+        request = MockMvcRequestBuilders.put(LOAN_API_URL + "/2").contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
         // then
@@ -555,7 +555,7 @@ public class LoanControllerE2ETest {
     }
 
     @Test
-    public void givenValidIdAndValidStatus_whenCallsUpdateLoanStatus_thenReturnStatus200() throws Exception {
+    public void givenValidId_whenCallsUpdateFinalizeLoan_thenReturnStatus200() throws Exception {
         // given
         Assertions.assertEquals(0, bookRepository.count());
         Assertions.assertEquals(0, loanRepository.count());
@@ -588,14 +588,14 @@ public class LoanControllerE2ETest {
         Assertions.assertEquals(1, loanRepository.count());
 
         // when
-        request = MockMvcRequestBuilders.patch(LOAN_API_URL + "/" + 1L + "/status/" + false);
+        request = MockMvcRequestBuilders.post(LOAN_API_URL + "/1/finalize");
 
         // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    public void givenValidIdAndInvalidStatus_whenCallsUpdateLoanStatus_thenReturnStatus500() throws Exception {
+    public void givenInvalidId_whenCallsFinalizeLoan_thenReturnStatus404() throws Exception {
         // given
         Assertions.assertEquals(0, bookRepository.count());
         Assertions.assertEquals(0, loanRepository.count());
@@ -628,49 +628,7 @@ public class LoanControllerE2ETest {
         Assertions.assertEquals(1, loanRepository.count());
 
         // when
-        request = MockMvcRequestBuilders.patch(LOAN_API_URL + "/" + 1L + "/status/" + null);
-
-        // then
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isInternalServerError())
-                .andExpect(MockMvcResultMatchers.jsonPath("status").value("INTERNAL_SERVER_ERROR"))
-                .andExpect(MockMvcResultMatchers.jsonPath("message").isNotEmpty());
-    }
-
-    @Test
-    public void givenInvalidIdAndValidStatus_whenCallsUpdateLoanStatus_thenReturnStatus404() throws Exception {
-        // given
-        Assertions.assertEquals(0, bookRepository.count());
-        Assertions.assertEquals(0, loanRepository.count());
-
-        var createBookRequest = CreateBookRequest.builder()
-                .title("Clean Code")
-                .isbn("9780132350884")
-                .author("Robert C. Martin")
-                .edition(1)
-                .publisher("Pearson").build();
-
-        var json = mapper.writeValueAsString(createBookRequest);
-
-        var request = MockMvcRequestBuilders.post(BOOK_API_URL).contentType(MediaType.APPLICATION_JSON).content(json);
-
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
-
-        var createLoanRequest = CreateLoanRequest.builder()
-                .customer("João")
-                .customerEmail("joao@email.com")
-                .bookIsbn("9780132350884").build();
-
-        json = mapper.writeValueAsString(createLoanRequest);
-
-        request = MockMvcRequestBuilders.post(LOAN_API_URL).contentType(MediaType.APPLICATION_JSON).content(json);
-
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
-
-        Assertions.assertEquals(1, bookRepository.count());
-        Assertions.assertEquals(1, loanRepository.count());
-
-        // when
-        request = MockMvcRequestBuilders.patch(LOAN_API_URL + "/" + 2L + "/status/" + false);
+        request = MockMvcRequestBuilders.post(LOAN_API_URL + "/2/finalize");
 
         // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -711,12 +669,12 @@ public class LoanControllerE2ETest {
         Assertions.assertEquals(1, bookRepository.count());
         Assertions.assertEquals(1, loanRepository.count());
 
-        request = MockMvcRequestBuilders.patch(LOAN_API_URL + "/" + 1L + "/status/" + false).content(json);
+        request = MockMvcRequestBuilders.post(LOAN_API_URL + "/1/finalize").content(json);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
 
         // when
-        request = MockMvcRequestBuilders.delete(LOAN_API_URL + "/" + 1L).content(json);
+        request = MockMvcRequestBuilders.delete(LOAN_API_URL + "/1").content(json);
 
         // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -756,7 +714,7 @@ public class LoanControllerE2ETest {
         Assertions.assertEquals(1, loanRepository.count());
 
         // when
-        request = MockMvcRequestBuilders.delete(LOAN_API_URL + "/" + 1L).content(json);
+        request = MockMvcRequestBuilders.delete(LOAN_API_URL + "/1").content(json);
 
         // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -798,7 +756,7 @@ public class LoanControllerE2ETest {
         Assertions.assertEquals(1, bookRepository.count());
         Assertions.assertEquals(1, loanRepository.count());
 
-        request = MockMvcRequestBuilders.patch(LOAN_API_URL + "/" + 1L + "/status/" + false).content(json);
+        request = MockMvcRequestBuilders.post(LOAN_API_URL + "/1/finalize").content(json);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
 

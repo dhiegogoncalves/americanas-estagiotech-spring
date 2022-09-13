@@ -93,8 +93,8 @@ public class Loan {
         this.updatedAt = Instant.now();
     }
 
-    public void updateStatus(Boolean active) {
-        this.active = Objects.requireNonNull(active, "'active' não pode ser nulo");
+    public void returnBook() {
+        this.active = false;
         this.updatedAt = Instant.now();
     }
 
