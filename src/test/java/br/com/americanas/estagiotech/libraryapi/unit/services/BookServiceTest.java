@@ -158,7 +158,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void givenValidBook_whenCallsCreateBook_thenReturnBookCreated() {
+    public void givenValidBook_whenCallsCreateBook_thenReturnBook() {
         // given
         var expectedId = 1L;
         var expectedTitle = "Clean Code";
@@ -223,7 +223,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void givenValidBook_whenCallsUpdateBook_thenReturnBookUpdated() {
+    public void givenValidBook_whenCallsUpdateBook_thenReturnBook() {
         // given
         var expectedId = 1L;
         var expectedTitle = "Clean Code";

@@ -49,12 +49,19 @@ public class LoanControllerE2ETest {
         Assertions.assertEquals(0, bookRepository.count());
         Assertions.assertEquals(0, loanRepository.count());
 
+        var expectedId = 1L;
+        var expectedTitle = "Clean Code";
+        var expectedIsbn = "9780132350884";
+        var expectedAuthor = "Robert C. Martin";
+        var expectedEdition = 1;
+        var expectedPublisher = "Pearson";
+
         var createBookRequest = CreateBookRequest.builder()
-                .title("Clean Code")
-                .isbn("9780132350884")
-                .author("Robert C. Martin")
-                .edition(1)
-                .publisher("Pearson").build();
+                .title(expectedTitle)
+                .isbn(expectedIsbn)
+                .author(expectedAuthor)
+                .edition(expectedEdition)
+                .publisher(expectedPublisher).build();
 
         var json = mapper.writeValueAsString(createBookRequest);
 
@@ -75,10 +82,14 @@ public class LoanControllerE2ETest {
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
 
+        var expectedCustomer = "Joao Silva";
+        var expectedCustomerEmail = "joao.silva@email.com";
+        var expectedActive = "true";
+
         var createLoanRequest = CreateLoanRequest.builder()
-                .customer("João Silva")
-                .customerEmail("joao.silva@email.com")
-                .bookIsbn("9780132350884").build();
+                .customer(expectedCustomer)
+                .customerEmail(expectedCustomerEmail)
+                .bookIsbn(expectedIsbn).build();
 
         json = mapper.writeValueAsString(createLoanRequest);
 
@@ -115,10 +126,25 @@ public class LoanControllerE2ETest {
 
         // then
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("current_page", Matchers.equalTo(expectedPage)))
-                .andExpect(MockMvcResultMatchers.jsonPath("per_page", Matchers.equalTo(expectedPerPage)))
-                .andExpect(MockMvcResultMatchers.jsonPath("total", Matchers.equalTo(expectedTotal)))
-                .andExpect(MockMvcResultMatchers.jsonPath("items", Matchers.hasSize(expectedItems)));
+                .andExpect(MockMvcResultMatchers.jsonPath("current_page").value(expectedPage))
+                .andExpect(MockMvcResultMatchers.jsonPath("per_page").value(expectedPerPage))
+                .andExpect(MockMvcResultMatchers.jsonPath("total").value(expectedTotal))
+                .andExpect(MockMvcResultMatchers.jsonPath("items", Matchers.hasSize(expectedItems)))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].id").value(expectedId))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].customer").value(expectedCustomer))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].customer_email").value(expectedCustomerEmail))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].loan_date").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].active").value(expectedActive))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].created_at").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].updated_at").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.id").value(expectedId))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.title").value(expectedTitle))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.isbn").value(expectedIsbn))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.author").value(expectedAuthor))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.edition").value(expectedEdition))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.publisher").value(expectedPublisher))
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.created_at").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("items[0].book.updated_at").isNotEmpty());
     }
 
     @Test
